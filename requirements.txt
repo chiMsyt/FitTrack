@@ -1,0 +1,8 @@
+# FitTrack — Python 3.14.4
+# Install with: pip install -r requirements.txt
+
+customtkinter==5.2.2          # Modern tkinter UI framework
+mysql-connector-python==9.3.0 # MySQL 9.7.0 LTS compatible connector
+matplotlib==3.10.9            # Charts (embedded in tkinter canvas)
+Pillow==12               # Image handling for tkinter
+python-dotenv==1.1.0          # Load DB credentials from .env file
