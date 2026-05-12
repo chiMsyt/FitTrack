@@ -44,14 +44,12 @@ C_TEXT_PRI    = "#EBEBEA"
 C_TEXT_SEC    = "#888880"
 C_TEXT_TER    = "#555550"
 C_DIVIDER     = "#2C2C2A"
-C_EASY        = C_ACCENT
-C_MEDIUM      = C_WARN
-C_HARD        = C_DANGER
-
-DIFF_COLORS = {
-    "Easy":   (C_ACCENT_DIM,  C_ACCENT_TEXT),
-    "Medium": (C_WARN_DIM,    C_WARN_TEXT),
-    "Hard":   (C_DANGER_DIM,  C_DANGER_TEXT),
+CATEGORY_COLORS = {
+    "Strength":    (C_ACCENT_DIM,  C_ACCENT_TEXT),
+    "Cardio":      (C_WARN_DIM,    C_WARN_TEXT),
+    "Core":        ("#1A1A3A",     "#A0A0F5"),
+    "Flexibility": ("#2A1A3A",     "#C0A0F5"),
+    "Full Body":   (C_DANGER_DIM,  C_DANGER_TEXT),
 }
 MEAL_COLORS = {
     "Breakfast": ("#1A2E3A", "#7AC8F0"),
@@ -378,7 +376,7 @@ class ExerciseRow(ctk.CTkFrame):
     """
     One row in the exercise list.
 
-    Displays: checkbox, name, amount+type, muscle group, difficulty badge,
+    Displays: checkbox, name, amount+type, muscle group, category badge,
               scheduled day tag, edit button, delete button.
 
     Callbacks:
@@ -403,8 +401,8 @@ class ExerciseRow(ctk.CTkFrame):
 
         ex_id       = exercise["exercise_id"]
         is_done     = bool(exercise.get("is_completed", False))
-        diff        = exercise.get("difficulty", "Easy")
-        diff_bg, diff_fg = DIFF_COLORS.get(diff, (C_ACCENT_DIM, C_ACCENT_TEXT))
+        cat         = exercise.get("category", "Strength")
+        diff_bg, diff_fg = CATEGORY_COLORS.get(cat, (C_ACCENT_DIM, C_ACCENT_TEXT))
         day_tag     = exercise.get("scheduled_day", "Daily")
         name_color  = C_TEXT_TER if is_done else C_TEXT_PRI
 
@@ -462,11 +460,11 @@ class ExerciseRow(ctk.CTkFrame):
         badges.pack(side="left", padx=8, pady=8)
 
         # Difficulty badge
-        diff_badge = ctk.CTkFrame(badges, fg_color=diff_bg, corner_radius=6)
-        diff_badge.pack(pady=(0, 4))
+        cat_badge = ctk.CTkFrame(badges, fg_color=diff_bg, corner_radius=6)
+        cat_badge.pack(pady=(0, 4))
         ctk.CTkLabel(
-            diff_badge,
-            text=diff,
+            cat_badge,
+            text=cat,
             font=ctk.CTkFont("Arial", size=10),
             text_color=diff_fg,
         ).pack(padx=8, pady=2)
