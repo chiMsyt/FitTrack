@@ -361,6 +361,23 @@ class ScrollableList(ctk.CTkScrollableFrame):
         kwargs.setdefault("scrollbar_button_color", C_CARD_BORDER)
         kwargs.setdefault("scrollbar_button_hover_color", C_TEXT_TER)
         super().__init__(parent, **kwargs)
+        # Prevent scroll events from bubbling to any parent scroll frame
+        self._bind_scroll_block(self._parent_canvas)
+
+    def _bind_scroll_block(self, widget) -> None:
+        """Bind scroll-stop on the internal canvas so parent frames don't steal it."""
+        def _block(e):
+            widget.yview_scroll(int(-1 * (e.delta / 120)), "units")
+            return "break"
+        def _block_linux_up(e):
+            widget.yview_scroll(-1, "units")
+            return "break"
+        def _block_linux_down(e):
+            widget.yview_scroll(1, "units")
+            return "break"
+        widget.bind("<MouseWheel>", _block, add=True)
+        widget.bind("<Button-4>",   _block_linux_up, add=True)
+        widget.bind("<Button-5>",   _block_linux_down, add=True)
 
     def clear(self) -> None:
         """Destroy all child widgets — call before re-rendering a list."""

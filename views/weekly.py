@@ -45,6 +45,11 @@ class WeeklyView(ctk.CTkFrame):
         self._user_id     = user_id
         self._toast       = toast
         self._on_navigate = on_navigate
+        # Scrollable container so the whole page scrolls
+        self._scroll = ctk.CTkScrollableFrame(self, fg_color=_BG,
+                                               scrollbar_button_color="#2C2C2A",
+                                               scrollbar_button_hover_color="#3A3A38")
+        self._scroll.pack(fill="both", expand=True)
         self._build_layout()
 
     # ------------------------------------------------------------------
@@ -52,8 +57,9 @@ class WeeklyView(ctk.CTkFrame):
     # ------------------------------------------------------------------
 
     def _build_layout(self) -> None:
+        s = self._scroll  # shorthand
         # Header
-        hdr = ctk.CTkFrame(self, fg_color="transparent")
+        hdr = ctk.CTkFrame(s, fg_color="transparent")
         hdr.pack(fill="x", padx=24, pady=(20, 0))
         ctk.CTkLabel(
             hdr, text="Weekly Planner",
@@ -69,7 +75,7 @@ class WeeklyView(ctk.CTkFrame):
             ).pack(side="right")
 
         # ── TODAY'S ROUTINE (interactive) ─────────────────────────────
-        today_card = SectionCard(self, title="Today's routine")
+        today_card = SectionCard(s, title="Today's routine")
         today_card.pack(fill="x", padx=24, pady=(14, 0))
 
         self._today_progress = ProgressBar(today_card.body, value=0.0, label="0% complete")
@@ -79,7 +85,7 @@ class WeeklyView(ctk.CTkFrame):
         self._today_list.pack(fill="both", expand=True)
 
         # ── 7-DAY SCHEDULE GRID ───────────────────────────────────────
-        grid_card = SectionCard(self, title="This week's schedule")
+        grid_card = SectionCard(s, title="This week's schedule")
         grid_card.pack(fill="x", padx=24, pady=(12, 0))
 
         self._grid_frame = ctk.CTkFrame(grid_card.body, fg_color="transparent")
@@ -88,7 +94,7 @@ class WeeklyView(ctk.CTkFrame):
             self._grid_frame.columnconfigure(i, weight=1, uniform="day")
 
         # ── BOTTOM: summary + chart ───────────────────────────────────
-        bottom = ctk.CTkFrame(self, fg_color="transparent")
+        bottom = ctk.CTkFrame(s, fg_color="transparent")
         bottom.pack(fill="both", expand=True, padx=24, pady=(12, 20))
         bottom.columnconfigure(0, weight=2)
         bottom.columnconfigure(1, weight=3)

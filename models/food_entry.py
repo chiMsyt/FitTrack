@@ -27,8 +27,8 @@ def create_food_entry(
     entry_date defaults to CURRENT_DATE in the schema (no arg needed).
     """
     sql = """
-        INSERT INTO food_entry (user_id, food_name, calories_kcal, meal_type)
-        VALUES (%s, %s, %s, %s)
+        INSERT INTO food_entry (user_id, food_name, calories_kcal, meal_type, entry_date)
+        VALUES (%s, %s, %s, %s, CURRENT_DATE)
     """
     with db.cursor() as cur:
         cur.execute(sql, (user_id, food_name, calories_kcal, meal_type))

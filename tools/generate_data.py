@@ -201,20 +201,22 @@ def main():
             todays_exs = [e for e in exercises
                           if e["scheduled_day"] == "Daily" or e["scheduled_day"] == dow]
 
-            fully_done = random.random() < streak_prob
+            # Vary completion probability slightly by week for realistic wave pattern
+            week_num = (d - start).days // 7
+            week_factor = 0.1 * (week_num % 3 - 1)  # slight wave: -0.1, 0, +0.1
+            effective_prob = max(0.5, min(0.95, streak_prob + week_factor))
+            fully_done = random.random() < effective_prob
 
             for ex in todays_exs:
                 if d == today:
-                    is_done = 0  # today is always pending on generate
-                    comp_at = None
-                else:
-                    is_done = 1 if fully_done else (1 if random.random() < 0.5 else 0)
-                    comp_at = f"{d} {random.randint(7,20):02d}:{random.randint(0,59):02d}:00" if is_done else None
-
+                    # Skip today entirely — app will seed today's logs on launch
+                    continue
+                is_done = 1 if fully_done else (1 if random.random() < 0.5 else 0)
+                comp_at = f"{d} {random.randint(7,20):02d}:{random.randint(0,59):02d}:00" if is_done else None
                 log_rows.append((1, ex["exercise_id"], str(d), is_done, comp_at))
 
                 # Weight log
-                if ex["exercise_type"] == "Weighted" and is_done and d != today:
+                if ex["exercise_type"] == "Weighted" and is_done:
                     name = ex["name"]
                     if "Bench"     in name: w = bench_prog.get(d)
                     elif "Squat"   in name: w = squat_prog.get(d)

@@ -160,17 +160,43 @@ class CompletionLineChart(ChartFrame):
                 idx = (d - monday).days
                 if 0 <= idx < 7:
                     rates[idx] = float(row.get("completion_rate", 0))
-        plot_x = [_DAY_LABELS[i] for i, r in enumerate(rates) if r is not None]
-        plot_y = [r for r in rates if r is not None]
-        if plot_x:
-            self._ax.plot(plot_x, plot_y, color=_ACCENT, linewidth=2,
-                          marker="o", markersize=5, markerfacecolor=_ACCENT)
-            self._ax.fill_between(plot_x, plot_y, alpha=0.12, color=_ACCENT)
-        self._ax.set_ylim(0, 105)
+
+        # Only plot up to yesterday — today's data is incomplete
+        today_idx = today.weekday()
+        plot_x, plot_y, plot_colors = [], [], []
+        for i, r in enumerate(rates):
+            if r is not None and i < today_idx:
+                plot_x.append(_DAY_LABELS[i])
+                plot_y.append(r)
+                plot_colors.append(_ACCENT if r >= 80 else (_WARN if r >= 50 else _DANGER))
+
+        if not plot_x:
+            self._ax.text(0.5, 0.5, "No completed days this week yet.",
+                          ha="center", va="center", transform=self._ax.transAxes,
+                          color=_TEXT_SEC, fontsize=10)
+            self._redraw()
+            return
+
+        self._ax.plot(plot_x, plot_y, color=_ACCENT, linewidth=2.5,
+                      marker="o", markersize=7, markerfacecolor=_ACCENT,
+                      markeredgecolor="#EBEBEA", markeredgewidth=1)
+        self._ax.fill_between(plot_x, plot_y, alpha=0.15, color=_ACCENT)
+
+        # Color-code each point
+        for i, (x, y) in enumerate(zip(plot_x, plot_y)):
+            color = _ACCENT if y >= 80 else (_WARN if y >= 50 else _DANGER)
+            self._ax.plot(x, y, "o", color=color, markersize=7,
+                          markeredgecolor="#EBEBEA", markeredgewidth=1, zorder=5)
+            self._ax.annotate(f"{int(y)}%", (x, y),
+                              textcoords="offset points", xytext=(0, 8),
+                              ha="center", fontsize=8, color=color)
+
+        self._ax.set_ylim(0, 115)
         self._ax.set_ylabel("Completion %", fontsize=9)
         self._ax.yaxis.set_major_formatter(
-            matplotlib.ticker.FuncFormatter(lambda v, _: f"{int(v)}%")
+            matplotlib.ticker.FuncFormatter(lambda v, _: f"{int(v)}%" if v <= 100 else "")
         )
+        self._ax.axhline(100, color=_ACCENT, linewidth=0.5, linestyle="--", alpha=0.3)
         self._redraw()
 
 

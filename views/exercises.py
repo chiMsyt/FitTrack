@@ -90,11 +90,17 @@ class ExercisesView(ctk.CTkFrame):
         self._f_notes    = self._field(r2, "Notes (optional)", placeholder="e.g. slow descent", width=200)
         self._f_notes.pack(side="left", padx=(0, 8))
 
-        ctk.CTkButton(r2, text="+ Add", width=90, height=34, corner_radius=7,
+        btn_frame = ctk.CTkFrame(r2, fg_color="transparent")
+        btn_frame.pack(side="left", padx=(0, 0))
+        ctk.CTkLabel(btn_frame, text=" ", font=ctk.CTkFont("Arial", size=11),
+                     text_color=_TEXT_SEC).pack(fill="x")  # spacer to align with labels
+        btn_row = ctk.CTkFrame(btn_frame, fg_color="transparent")
+        btn_row.pack()
+        ctk.CTkButton(btn_row, text="+ Add", width=90, height=32, corner_radius=7,
                       fg_color=_ACCENT, hover_color="#158A62",
                       font=ctk.CTkFont("Arial", size=13), text_color="#FFFFFF",
                       command=self._handle_add).pack(side="left", padx=(0, 6))
-        ctk.CTkButton(r2, text="Clear", width=60, height=34, corner_radius=7,
+        ctk.CTkButton(btn_row, text="Clear", width=60, height=32, corner_radius=7,
                       fg_color="#2A2A28", hover_color="#3A3A38",
                       font=ctk.CTkFont("Arial", size=13), text_color=_TEXT_SEC,
                       command=self._clear_form).pack(side="left")
